@@ -45,7 +45,7 @@ services:
         condition: service_healthy
       plausible_events_db:
         condition: service_healthy
-    entrypoint: sh -c "sleep 15 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh db init-admin && /entrypoint.sh run"
+    entrypoint: sh -c "sleep 15 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
     environment:
       - BASE_URL=https://${VIRTUAL_HOST}
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
