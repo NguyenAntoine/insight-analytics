@@ -25,6 +25,8 @@ services:
       - ./data/clickhouse:/var/lib/clickhouse
     environment:
       - CLICKHOUSE_DB=plausible
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
     networks:
       - default
 
