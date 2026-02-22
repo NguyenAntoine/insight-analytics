@@ -23,6 +23,7 @@ services:
     restart: always
     volumes:
       - ./data/clickhouse:/var/lib/clickhouse
+      - ./clickhouse/users.d/default-password.xml:/etc/clickhouse-server/users.d/default-password.xml
     environment:
       - CLICKHOUSE_DB=plausible
     healthcheck:
