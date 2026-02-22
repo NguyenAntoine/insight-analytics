@@ -1,5 +1,5 @@
 services:
-  db:
+  plausible_db:
     image: postgres:16-alpine
     container_name: plausible_db
     restart: always
@@ -17,16 +17,19 @@ services:
     networks:
       - default
 
-  clickhouse:
+  plausible_events_db:
     image: clickhouse/clickhouse-server:latest
-    container_name: plausible_clickhouse
+    container_name: plausible_events_db
     restart: always
     volumes:
       - ./data/clickhouse:/var/lib/clickhouse
     environment:
       - CLICKHOUSE_DB=plausible
-      - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - default
 
@@ -37,16 +40,15 @@ services:
     expose:
       - 8000
     depends_on:
-      db:
+      plausible_db:
         condition: service_healthy
-      clickhouse:
-        condition: service_started
-    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh db init-admin && /entrypoint.sh run"
+      plausible_events_db:
+        condition: service_healthy
     environment:
       - BASE_URL=https://${VIRTUAL_HOST}
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
-      - DATABASE_URL=postgres://plausible:${POSTGRES_PASSWORD}@db:5432/plausible
-      - CLICKHOUSE_DATABASE_URL=http://clickhouse:8123/plausible
+      - DATABASE_URL=postgres://plausible:${POSTGRES_PASSWORD}@plausible_db:5432/plausible
+      - CLICKHOUSE_DATABASE_URL=http://plausible_events_db:8123/plausible
       - VIRTUAL_HOST=${VIRTUAL_HOST}
       - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
