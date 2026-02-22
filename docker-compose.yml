@@ -26,6 +26,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh db init-admin && /entrypoint.sh run"
     environment:
       - BASE_URL=https://${VIRTUAL_HOST}
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
