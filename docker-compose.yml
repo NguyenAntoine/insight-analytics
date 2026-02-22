@@ -35,6 +35,7 @@ services:
       - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
       - VIRTUAL_PORT=8000
+      - CLICKHOUSE_ENABLED=false
     networks:
       - default
       - reverse-proxy
